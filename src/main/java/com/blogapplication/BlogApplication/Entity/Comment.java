@@ -1,6 +1,5 @@
 package com.blogapplication.BlogApplication.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -88,18 +87,5 @@ public class Comment {
 
     public void setPost(Post post) {
         this.post = post;
-    }
-
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", commentText='" + commentText + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", post=" + post +
-                '}';
     }
 }

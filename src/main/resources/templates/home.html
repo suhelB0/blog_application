@@ -142,8 +142,8 @@
             <input type="hidden" name="search" th:value="${search}">
             <select name="sortBy">
                 <option value="0" th:selected="${sortBy == 0}">Sort</option>
-                <option value="1" th:selected="${sortBy == 1}">Old</option>
-                <option value="2" th:selected="${sortBy == 2}">New</option>
+                <option value="1" th:selected="${sortBy == 1}">Old to New</option>
+                <option value="2" th:selected="${sortBy == 2}">New to Old</option>
             </select>
             <button type="submit">Sort</button>
         </form>
@@ -151,7 +151,7 @@
         <!-- Blog Posts -->
         <div th:each="post : ${posts}" class="post">
             <h3 th:text="${post.title}"></h3>
-            <p th:text="${post.user.name + ', ' + #temporals.format(post.createdAt, 'dd/MMM/yyyy HH:mm')}"></p>
+            <p th:text="${post.user.name + ', ' + #temporals.format(post.publishedAt, 'dd/MMM/yyyy HH:mm')}"></p>
             <p th:text="${post.excerpt}"></p>
 
             <strong>Tags:</strong>

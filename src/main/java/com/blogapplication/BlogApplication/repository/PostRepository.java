@@ -13,7 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t " +
             "WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))"+
+            "OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Post> searchPosts(@Param("keyword") String keyword);
 
     List<Post> findAllByOrderByCreatedAtAsc();
@@ -24,6 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :query, '%'))" +
             "ORDER BY p.createdAt ASC")
     List<Post> searchPostsSortedOld(@Param("query") String query);
 
@@ -31,6 +33,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :query, '%'))" +
             "ORDER BY p.createdAt DESC")
     List<Post> searchPostsSortedNew(@Param("query") String query);
 

@@ -19,6 +19,7 @@ public class Post {
     private String content;
     private boolean isPublished;
     private LocalDateTime publishedAt;
+    @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,6 +35,25 @@ public class Post {
     joinColumns = @JoinColumn(name = "post_id"),
     inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+
+        if (isPublished && publishedAt == null) {
+            this.publishedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+
+        if (isPublished && publishedAt == null) {
+            this.publishedAt = LocalDateTime.now();
+        }
+    }
 
     public int getId() {
         return id;

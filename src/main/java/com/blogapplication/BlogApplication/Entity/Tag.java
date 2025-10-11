@@ -69,15 +69,4 @@ public class Tag {
     public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
-
-    @Override
-    public String toString() {
-        return "Tag{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", posts=" + posts +
-                '}';
-    }
 }

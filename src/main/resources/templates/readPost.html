@@ -41,7 +41,7 @@
 <body>
     <div class="blog-post">
         <h3 th:text="${post.title}"></h3>
-        <p th:text="${post.user.name +', '+ #temporals.format(post.createdAt, 'dd/MMM/yyyy  HH:mm')}"></p>
+        <p th:text="${post.user.name +', '+ #temporals.format(post.publishedAt, 'dd/MMM/yyyy  HH:mm')}"></p>
         <p th:text="${post.content}"></p>
         <div class="button-container">
             <a th:href="@{'/updatePost/'+${post.id}}">Update</a>

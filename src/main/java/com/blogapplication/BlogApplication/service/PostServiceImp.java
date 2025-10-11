@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,13 +37,12 @@ public class PostServiceImp implements PostService{
     public void saveOrUpdatePost(Post post, String tagString) {
         if(post.getId()!=0){
             Post existingPost = getPostById(post.getId());
-            post.setCreatedAt(existingPost.getCreatedAt());
-            post.setUpdatedAt(LocalDateTime.now());
+            post.setUser(existingPost.getUser());
             post.setComments(existingPost.getComments());
         }
         else{
-            post.setCreatedAt(LocalDateTime.now());
-            post.setUpdatedAt(LocalDateTime.now());
+            User user = userService.getUserById(1);
+            post.setUser(user);
         }
 
         User user = userService.getUserById(1);
