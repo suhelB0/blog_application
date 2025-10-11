@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Post</title>
+</head>
+<body>
+    <h2>Blog Application</h2>
+
+    <form th:action="@{/savePost}" th:object="${post}" method="post">
+        <div>
+            <input type="hidden" th:field="*{id}"/>
+        </div>
+        <br>
+<!--        <div>-->
+<!--            <label> Enter Author:-->
+<!--                <input type="text" th:field="*{author}" placeholder="Enter Author name"/>-->
+<!--            </label>-->
+<!--        </div>-->
+<!--        <br>-->
+        <div>
+            <label> Enter Title:
+                <input type="text" th:field="*{title}" placeholder="Enter title" />
+            </label>
+        </div>
+        <br>
+        <div>
+            <label> Enter Tags:
+                <input type="text" name="tag" th:value="${tag}" placeholder="Enter tags (comma separated)" />
+            </label>
+        </div>
+        <br>
+        <div>
+            <label> Enter Content:
+                <textarea th:field="*{content}" placeholder="Enter content" rows="10" cols="50"></textarea>
+            </label>
+        </div>
+        <br>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</body>
+</html>

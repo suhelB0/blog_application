@@ -1,0 +1,170 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Home</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <a th:href="@{/newPost}">Add Post</a>-->
+<!--    <h1>My Blog Application</h1>-->
+
+<!--    <form th:action="@{/search}" method="get">-->
+<!--        <input type="text" name="query" placeholder="Search posts..." th:value="${query}">-->
+<!--        <button type="submit">Search</button>-->
+<!--    </form>-->
+
+<!--    <form action="/home" method="get">-->
+<!--        <select id="sortBy" name="sortBy">-->
+<!--            <option value="0" th:selected="${sortBy == '0'}">Sort</option>-->
+<!--            <option value="1" th:selected="${sortBy == '1'}">Old</option>-->
+<!--            <option value="2" th:selected="${sortBy == '2'}">New</option>-->
+<!--        </select>-->
+<!--        <button type="submit">Sort</button>-->
+<!--    </form>-->
+
+
+<!--    <div th:each="post : ${posts}" style="height:230px; width:49%; margin-top:10px;display:inline-block;border:1px solid black; padding:0 5px;">-->
+<!--        <h3 th:text="${post.title}"></h3>-->
+<!--        <p th:text="${post.user.name +', '+ #temporals.format(post.createdAt, 'dd/MMM/yyyy  HH:mm')}"></p>-->
+<!--        <p th:text="${post.excerpt}"></p>-->
+
+<!--        <span><strong>Tags: </strong></span>-->
+<!--        <span th:each="tag: ${post.tags}" th:text="${tag.name}" style="background-color: #e0e0e0; padding: 2px 6px; margin-right: 5px; border-radius: 4px;"></span>-->
+<!--        <br>-->
+<!--        <a th:href="@{'/readPost/'+${post.id}}">Read More...</a>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+
+        .container {
+          display: flex;
+          gap: 20px;
+        }
+
+        .sidebar {
+          width: 220px;
+          border-right: 1px solid #ddd;
+          padding-right: 10px;
+        }
+
+        .main-content {
+          flex: 1;
+        }
+
+        .filters, .sort, .search {
+          margin-bottom: 15px;
+        }
+
+        .post {
+          border: 1px solid #ccc;
+          padding: 10px;
+          margin-bottom: 10px;
+          display: inline-block;
+          width:40%;
+          height: 230px;
+        }
+
+        .tag-list, .author-list {
+          margin-left: 10px;
+        }
+
+        form {
+          margin-bottom: 10px;
+        }
+
+        button {
+          margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Filter Form (tags + authors) -->
+        <form action="/home" method="get">
+            <div class="filters">
+                <h3>Filter By</h3>
+
+                <!-- Tags -->
+                <strong>Tags:</strong><br>
+                <div class="tag-list" th:each="tag : ${tags}">
+                    <label>
+                        <input type="checkbox" name="tag"
+                               th:value="${tag.name}"
+                               th:checked="${param.tag != null and #arrays.contains(param.tag, tag.name)}">
+                        <span th:text="${tag.name}"></span>
+                    </label><br>
+                </div>
+
+                <br>
+                <!-- Authors -->
+                <strong>Authors:</strong><br>
+                <div class="author-list" th:each="auth : ${allAuthors}">
+                    <label>
+                        <input type="checkbox" name="author"
+                               th:value="${auth.name}"
+                               th:checked="${param.author != null and #arrays.contains(param.author, auth)}">
+                        <span th:text="${auth.name}"></span>
+                    </label><br>
+                </div>
+
+                <button type="submit">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>My Blog Application</h1>
+        <a th:href="@{/newPost}">Add Post</a>
+
+        <!-- Search Form -->
+        <form class="search" action="/home" method="get">
+            <input type="text" name="search" placeholder="Search posts..." th:value="${search}">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Sort Form -->
+        <form class="sort" action="/home" method="get">
+            <input type="hidden" name="search" th:value="${search}">
+            <select name="sortBy">
+                <option value="0" th:selected="${sortBy == 0}">Sort</option>
+                <option value="1" th:selected="${sortBy == 1}">Old</option>
+                <option value="2" th:selected="${sortBy == 2}">New</option>
+            </select>
+            <button type="submit">Sort</button>
+        </form>
+
+        <!-- Blog Posts -->
+        <div th:each="post : ${posts}" class="post">
+            <h3 th:text="${post.title}"></h3>
+            <p th:text="${post.user.name + ', ' + #temporals.format(post.createdAt, 'dd/MMM/yyyy HH:mm')}"></p>
+            <p th:text="${post.excerpt}"></p>
+
+            <strong>Tags:</strong>
+            <span th:each="tag : ${post.tags}"
+                  th:text="${tag.name}"
+                  style="background-color: #eee; padding: 2px 5px; margin-right: 5px; border-radius: 3px;">
+            </span>
+            <br>
+            <a th:href="@{'/readPost/' + ${post.id}}">Read More...</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
