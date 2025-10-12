@@ -5,7 +5,6 @@ import com.blogapplication.BlogApplication.Entity.Tag;
 import com.blogapplication.BlogApplication.Entity.User;
 import com.blogapplication.BlogApplication.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -88,24 +87,13 @@ public class PostServiceImp implements PostService{
     }
 
     @Override
-    public List<Post> getAllPostsSorted(String sortBy) {
-        Sort sort = Sort.by("createdAt");
-        if("1".equals(sortBy)) {
-            sort = sort.ascending();
-        } else if("2".equals(sortBy)) {
-            sort = sort.descending();
-        }
-        return postRepository.findAll(sort);
-    }
-
-    @Override
     public List<Post> getAllPostsSortedOld() {
-        return postRepository.findAllByOrderByCreatedAtAsc();
+        return postRepository.findAllByIsPublishedTrueOrderByPublishedAtAsc();
     }
 
     @Override
     public List<Post> getAllPostsSortedNew() {
-        return postRepository.findAllByOrderByCreatedAtDesc();
+        return postRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc();
     }
 
     @Override

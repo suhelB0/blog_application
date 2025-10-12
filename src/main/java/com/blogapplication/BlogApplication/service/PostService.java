@@ -5,17 +5,15 @@ import com.blogapplication.BlogApplication.Entity.Post;
 import java.util.List;
 
 public interface PostService {
-    public Post getPostById(int id);
+    Post getPostById(int id);
 
-    public List<Post> getAllPost();
+    List<Post> getAllPost();
 
-    public void saveOrUpdatePost(Post post, String tagString);
+    void saveOrUpdatePost(Post post, String tagString);
 
     void deletePostById(int id);
 
     List<Post> searchPosts(String keyword);
-
-    List<Post> getAllPostsSorted(String sortBy);
 
     List<Post> getAllPostsSortedOld();
 
