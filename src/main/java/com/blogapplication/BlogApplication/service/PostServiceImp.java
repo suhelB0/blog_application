@@ -13,15 +13,16 @@ import java.util.List;
 
 @Service
 public class PostServiceImp implements PostService{
+    private final PostRepository postRepository;
+    private final UserService userService;
+    private final TagService tagService;
 
     @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TagService tagService;
+    public PostServiceImp(PostRepository postRepository, UserService userService, TagService tagService) {
+        this.postRepository = postRepository;
+        this.userService = userService;
+        this.tagService = tagService;
+    }
 
     @Override
     public Post getPostById(int id) {
@@ -48,7 +49,7 @@ public class PostServiceImp implements PostService{
         User user = userService.getUserById(1);
         post.setUser(user);
 
-        String tags[] = tagString.split(",");
+        String[] tags = tagString.split(",");
         List<Tag> tagList = new ArrayList<>();
         for(String tag: tags){
             tag = tag.trim();
@@ -83,7 +84,7 @@ public class PostServiceImp implements PostService{
     }
 
     @Override
-    public List<Post> getFilteredPosts(String search, String order, String[] tags, String[] authors) {
+    public List<Post> getFilteredPosts(String search, String sortField, String order, String[] tags, String[] authors) {
 
         List<Post> posts;
 
@@ -92,10 +93,10 @@ public class PostServiceImp implements PostService{
 
         if(hasSearch && hasFilters){
             if(order.equals("asc")){
-                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC, "publishedAt"));
+                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC, sortField));
             }
             else if(order.equals("desc")){
-                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC,"publishedAt"));
+                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.DESC,sortField));
             }
             else {
                 posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.unsorted());
@@ -103,9 +104,9 @@ public class PostServiceImp implements PostService{
         }
         else if(hasFilters){
             if(order.equals("asc")){
-                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.ASC, "publishedAt"));
+                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.ASC, sortField));
             } else if(order.equals("desc")){
-                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.DESC, "publishedAt"));
+                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.DESC, sortField));
             }
             else{
                 posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.unsorted());
@@ -113,13 +114,13 @@ public class PostServiceImp implements PostService{
         }
         else if(hasSearch){
             if(order.equals("asc")){
-                posts = postRepository.searchPostsSortedOld(search);
+                posts = postRepository.searchPostsSort(search, Sort.by(Sort.Direction.ASC, sortField));
             }
             else if(order.equals("desc")){
-                posts = postRepository.searchPostsSortedNew(search);
+                posts = postRepository.searchPostsSort(search, Sort.by(Sort.Direction.DESC, sortField));
             }
             else{
-                posts = postRepository.searchPosts(search);
+                posts = postRepository.searchPostsSort(search, Sort.unsorted());
             }
         }
         else{

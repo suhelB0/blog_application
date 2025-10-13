@@ -9,17 +9,16 @@ import java.util.List;
 
 @Service
 public class TagServiceImp implements TagService{
+    private final TagRepository tagRepository;
 
     @Autowired
-    TagRepository tagRepository;
-    @Override
-    public List<Tag> getAllTags() {
-        return tagRepository.findAll();
+    public TagServiceImp(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
     }
 
     @Override
-    public List<Tag> getAllTagsUnique() {
-        return List.of();
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
     }
 
     @Override
@@ -30,5 +29,9 @@ public class TagServiceImp implements TagService{
     @Override
     public Tag findTagByName(String tagName) {
         return tagRepository.findByName(tagName);
+    }
+
+    public List<Tag> getPublishedTags() {
+        return tagRepository.findTagsOfPublishedPosts();
     }
 }

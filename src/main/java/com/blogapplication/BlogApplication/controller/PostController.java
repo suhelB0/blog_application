@@ -15,15 +15,16 @@ import java.util.List;
 
 @Controller
 public class PostController {
+    private final PostService postService;
+    private final TagService tagService;
+    private final UserService userService;
 
     @Autowired
-    private PostService postService;
-
-    @Autowired
-    private TagService tagService;
-
-    @Autowired
-    private UserService userService;
+    public PostController(PostService postService, TagService tagService, UserService userService) {
+        this.postService = postService;
+        this.tagService = tagService;
+        this.userService = userService;
+    }
 
     @GetMapping("/newPost")
     public String addPost(Model model){
@@ -50,7 +51,7 @@ public class PostController {
                        @RequestParam(value = "tag", required = false) String[] tags,
                        @RequestParam(value = "author", required = false) String[] authors, Model model){
 
-        List<Post> posts = postService.getFilteredPosts(search, order, tags, authors);
+        List<Post> posts = postService.getFilteredPosts(search, sortField, order, tags, authors);
 
         model.addAttribute("posts", posts);
         model.addAttribute("sortField", sortField);
@@ -58,7 +59,7 @@ public class PostController {
         model.addAttribute("search", search);
         model.addAttribute("tag", tags);
         model.addAttribute("author", authors);
-        model.addAttribute("tags", tagService.getAllTags());
+        model.addAttribute("tags", tagService.getPublishedTags());
         model.addAttribute("allAuthors", userService.getAuthors());
         return "home";
     }

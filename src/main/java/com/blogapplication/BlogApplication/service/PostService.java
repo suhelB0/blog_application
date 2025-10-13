@@ -13,5 +13,5 @@ public interface PostService {
 
     void deletePostById(int id);
 
-    List<Post> getFilteredPosts(String search, String order, String[] tags, String[] authors);
+    List<Post> getFilteredPosts(String search, String sortField, String order, String[] tags, String[] authors);
 }

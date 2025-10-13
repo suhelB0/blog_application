@@ -14,15 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class CommentController {
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+    private final PostService postService;
 
     @Autowired
-    private PostService postService;
+    public CommentController(CommentService commentService, PostService postService) {
+        this.commentService = commentService;
+        this.postService = postService;
+    }
 
     @PostMapping("/saveComment/{id}")
-    public String saveComment(@ModelAttribute Comment comment, @PathVariable("id") int id, Model model){
-        comment.setId(0);
+    public String saveComment(@ModelAttribute Comment comment, @PathVariable("id") int id){
         Post post = postService.getPostById(id);
         comment.setPost(post);
         commentService.saveComment(comment);

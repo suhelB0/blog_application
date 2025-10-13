@@ -9,9 +9,12 @@ import java.util.List;
 
 @Service
 public class UserServiceImp implements UserService{
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public UserServiceImp(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User getUserById(int id) {

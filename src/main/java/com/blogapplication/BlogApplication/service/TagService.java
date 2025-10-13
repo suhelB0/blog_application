@@ -1,15 +1,16 @@
 package com.blogapplication.BlogApplication.service;
 
 import com.blogapplication.BlogApplication.Entity.Tag;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
 public interface TagService {
-    public List<Tag> getAllTags();
+    List<Tag> getAllTags();
 
-    public List<Tag> getAllTagsUnique();
-
-    public void saveTag(Tag tag);
+    void saveTag(Tag tag);
 
     Tag findTagByName(String tagName);
+
+    List<Tag> getPublishedTags();
 }

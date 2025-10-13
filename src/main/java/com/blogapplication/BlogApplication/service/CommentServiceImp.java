@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CommentServiceImp implements CommentService{
+    private final CommentRepository commentRepository;
+
     @Autowired
-    CommentRepository commentRepository;
+    public CommentServiceImp(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     @Override
     public void saveComment(Comment comment) {
