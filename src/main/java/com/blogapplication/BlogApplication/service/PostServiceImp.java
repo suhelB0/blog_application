@@ -5,6 +5,7 @@ import com.blogapplication.BlogApplication.Entity.Tag;
 import com.blogapplication.BlogApplication.Entity.User;
 import com.blogapplication.BlogApplication.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class PostServiceImp implements PostService{
 
     @Override
     public List<Post> getAllPost() {
-        return postRepository.findAll();
+        return postRepository.findAllByIsPublishedTrue();
     }
 
     @Override
@@ -82,27 +83,56 @@ public class PostServiceImp implements PostService{
     }
 
     @Override
-    public List<Post> searchPosts(String keyword) {
-        return postRepository.searchPosts(keyword);
-    }
+    public List<Post> getFilteredPosts(String search, String order, String[] tags, String[] authors) {
 
-    @Override
-    public List<Post> getAllPostsSortedOld() {
-        return postRepository.findAllByIsPublishedTrueOrderByPublishedAtAsc();
-    }
+        List<Post> posts;
 
-    @Override
-    public List<Post> getAllPostsSortedNew() {
-        return postRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc();
-    }
+        boolean hasSearch = search != null && !search.isEmpty();
+        boolean hasFilters = tags != null || authors != null;
 
-    @Override
-    public List<Post> searchPostsSortedOld(String search) {
-        return postRepository.searchPostsSortedOld(search);
-    }
-
-    @Override
-    public List<Post> searchPostsSortedNew(String search) {
-        return postRepository.searchPostsSortedNew(search);
+        if(hasSearch && hasFilters){
+            if(order.equals("asc")){
+                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC, "publishedAt"));
+            }
+            else if(order.equals("desc")){
+                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC,"publishedAt"));
+            }
+            else {
+                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.unsorted());
+            }
+        }
+        else if(hasFilters){
+            if(order.equals("asc")){
+                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.ASC, "publishedAt"));
+            } else if(order.equals("desc")){
+                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.DESC, "publishedAt"));
+            }
+            else{
+                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.unsorted());
+            }
+        }
+        else if(hasSearch){
+            if(order.equals("asc")){
+                posts = postRepository.searchPostsSortedOld(search);
+            }
+            else if(order.equals("desc")){
+                posts = postRepository.searchPostsSortedNew(search);
+            }
+            else{
+                posts = postRepository.searchPosts(search);
+            }
+        }
+        else{
+            if(order.equals("asc")){
+                posts = postRepository.findAllByIsPublishedTrueOrderByPublishedAtAsc();
+            }
+            else if(order.equals("desc")){
+                posts = postRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc();
+            }
+            else {
+                posts = postRepository.findAllByIsPublishedTrue();
+            }
+        }
+        return posts;
     }
 }

@@ -97,6 +97,12 @@
         <form action="/home" method="get">
             <div class="filters">
                 <h3>Filter By</h3>
+                <!-- Preserve Search -->
+                <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
+
+                <!-- Preserve Sort -->
+                <input type="hidden" name="sortField" th:if="${sortField != null and order != null and order != ''}" th:value="${sortField}">
+                <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
 
                 <!-- Tags -->
                 <strong>Tags:</strong><br>
@@ -116,7 +122,7 @@
                     <label>
                         <input type="checkbox" name="author"
                                th:value="${auth.name}"
-                               th:checked="${param.author != null and #arrays.contains(param.author, auth)}">
+                               th:checked="${param.author != null and #arrays.contains(param.author, auth.name)}">
                         <span th:text="${auth.name}"></span>
                     </label><br>
                 </div>
@@ -139,11 +145,19 @@
 
         <!-- Sort Form -->
         <form class="sort" action="/home" method="get">
-            <input type="hidden" name="search" th:value="${search}">
-            <select name="sortBy">
-                <option value="0" th:selected="${sortBy == 0}">Sort</option>
-                <option value="1" th:selected="${sortBy == 1}">Old to New</option>
-                <option value="2" th:selected="${sortBy == 2}">New to Old</option>
+            <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
+
+            <div th:if="${param.tag != null}">
+                <input type="hidden" name="tag" th:each="t : ${param.tag}" th:value="${t}">
+            </div>
+            <div th:if="${param.author != null}">
+                <input type="hidden" name="author" th:each="a : ${param.author}" th:value="${a}">
+            </div>
+            <input type="hidden" name="sortField" value="publishedAt">
+            <select name="order">
+                <option value="" disabled selected>Sort</option>
+                <option value="desc" th:selected="${order == 'desc'}">New to Old</option>
+                <option value="asc" th:selected="${order == 'asc'}">Old to New</option>
             </select>
             <button type="submit">Sort</button>
         </form>

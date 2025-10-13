@@ -13,13 +13,5 @@ public interface PostService {
 
     void deletePostById(int id);
 
-    List<Post> searchPosts(String keyword);
-
-    List<Post> getAllPostsSortedOld();
-
-    List<Post> getAllPostsSortedNew();
-
-    List<Post> searchPostsSortedOld(String search);
-
-    List<Post> searchPostsSortedNew(String search);
+    List<Post> getFilteredPosts(String search, String order, String[] tags, String[] authors);
 }

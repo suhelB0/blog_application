@@ -45,29 +45,19 @@ public class PostController {
 
     @GetMapping("/home")
     public String home(@RequestParam(value = "search", defaultValue = "", required = false) String search,
-                       @RequestParam(value = "sortBy", defaultValue = "0", required = false) int sortBy, Model model){
-        List<Post> posts;
-        if(!search.isEmpty() && sortBy==0){
-            posts = postService.searchPosts(search);
-        }
-        else if(search.isEmpty() && sortBy==1){
-            posts = postService.getAllPostsSortedOld();
-        }
-        else if(search.isEmpty() && sortBy==2){
-            posts = postService.getAllPostsSortedNew();
-        }
-        else if(!search.isEmpty() && sortBy==1){
-            posts = postService.searchPostsSortedOld(search);
-        }
-        else if(!search.isEmpty() && sortBy==2) {
-            posts = postService.searchPostsSortedNew(search);
-        }
-        else{
-            posts = postService.getAllPost();
-        }
+                       @RequestParam(value = "sortField", defaultValue = "publishedAt", required = false) String sortField,
+                       @RequestParam(value = "order", defaultValue = "", required = false) String order,
+                       @RequestParam(value = "tag", required = false) String[] tags,
+                       @RequestParam(value = "author", required = false) String[] authors, Model model){
+
+        List<Post> posts = postService.getFilteredPosts(search, order, tags, authors);
+
         model.addAttribute("posts", posts);
-        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("order", order);
         model.addAttribute("search", search);
+        model.addAttribute("tag", tags);
+        model.addAttribute("author", authors);
         model.addAttribute("tags", tagService.getAllTags());
         model.addAttribute("allAuthors", userService.getAuthors());
         return "home";
