@@ -5,62 +5,91 @@
     <title>Home</title>
     <style>
         body {
-          font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif;
         }
 
         .container {
-          display: flex;
-          gap: 20px;
+            display: flex;
+            gap: 20px;
         }
 
         .sidebar {
-          width: 220px;
-          border-right: 1px solid #ddd;
-          padding-right: 10px;
+            width: 220px;
+            border-right: 1px solid #ddd;
+            padding-right: 10px;
         }
 
         .main-content {
-          flex: 1;
+            flex: 1;
         }
 
         .filters, .sort, .search {
-          margin-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Posts container */
+        .posts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .post {
-          border: 1px solid #ccc;
-          padding: 10px;
-          margin-bottom: 10px;
-          display: inline-block;
-          width:40%;
-          height: 230px;
+            flex: 0 0 48%; /* Two posts per row */
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 230px;
+            box-sizing: border-box;
         }
 
         .tag-list, .author-list {
-          margin-left: 10px;
+            margin-left: 10px;
         }
 
         form {
-          margin-bottom: 10px;
+            margin-bottom: 10px;
         }
 
         button {
-          margin-top: 5px;
+            margin-top: 5px;
         }
+
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            margin: 0 5px;
+            color: #333;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            background-color: #eee;
+        }
+            .pagination a.active {
+                background-color: #333;
+                color: #fff;
+                font-weight: bold;
+            }
     </style>
 </head>
 <body>
 
 <div class="container">
 
+    <!-- Sidebar: Filters -->
     <div class="sidebar">
-        <!-- Filter Form (tags + authors) -->
         <form action="/home" method="get">
             <div class="filters">
                 <h3>Filter By</h3>
 
                 <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
-
                 <input type="hidden" name="sortField" th:if="${sortField != null and order != null and order != ''}" th:value="${sortField}">
                 <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
 
@@ -74,6 +103,7 @@
                     </label><br>
                 </div>
                 <br>
+
                 <strong>Authors:</strong><br>
                 <div class="author-list" th:each="auth : ${allAuthors}">
                     <label>
@@ -89,18 +119,20 @@
         </form>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
         <h1>My Blog Application</h1>
         <a th:href="@{/newPost}">Add Post</a>
 
+        <!-- Search -->
         <form class="search" action="/home" method="get">
             <input type="text" name="search" placeholder="Search posts..." th:value="${search}">
             <button type="submit">Search</button>
         </form>
 
+        <!-- Sort -->
         <form class="sort" action="/home" method="get">
             <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
-
             <div th:if="${param.tag != null}">
                 <input type="hidden" name="tag" th:each="t : ${param.tag}" th:value="${t}">
             </div>
@@ -117,20 +149,92 @@
             <button type="submit">Sort</button>
         </form>
 
-        <!-- Blog Posts -->
-        <div th:each="post : ${posts}" class="post">
-            <h3 th:text="${post.title}"></h3>
-            <p th:text="${post.user.name + ', ' + #temporals.format(post.publishedAt, 'dd/MMM/yyyy HH:mm')}"></p>
-            <p th:text="${post.excerpt}"></p>
+        <!-- Posts -->
+        <div class="posts-container">
+            <div th:each="post : ${posts}" class="post">
+                <h3 th:text="${post.title}"></h3>
+                <p th:text="${post.user.name + ', ' + #temporals.format(post.publishedAt, 'dd/MMM/yyyy HH:mm')}"></p>
+                <p th:text="${post.excerpt}"></p>
 
-            <strong>Tags:</strong>
-            <span th:each="tag : ${post.tags}"
-                  th:text="${tag.name}"
-                  style="background-color: #eee; padding: 2px 5px; margin-right: 5px; border-radius: 3px;">
-            </span>
-            <br>
-            <a th:href="@{'/readPost/' + ${post.id}}">Read More...</a>
+                <strong>Tags:</strong>
+                <span th:each="tag : ${post.tags}" th:text="${tag.name}"
+                      style="background-color: #eee; padding: 2px 5px; margin-right: 5px; border-radius: 3px;">
+                </span>
+                <br>
+                <a th:href="@{'/readPost/' + ${post.id}}">Read More...</a>
+            </div>
         </div>
+
+        <div class="pagination">
+            <nav>
+                <ul style="list-style: none; padding: 0; display: inline-flex; gap: 10px;">
+
+                    <!-- Previous Button -->
+                    <li th:if="${currentPage > 0}">
+                        <form method="get" action="/home" style="display: inline;">
+                            <input type="hidden" name="start" th:value="${currentPage - 1}">
+                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
+                            <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
+                            <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
+                            <div th:if="${param.tag != null}">
+                                <input type="hidden" th:each="t : ${param.tag}" name="tag" th:value="${t}">
+                            </div>
+                            <div th:if="${param.author != null}">
+                                <input type="hidden" th:each="a : ${param.author}" name="author" th:value="${a}">
+                            </div>
+                            <button type="submit" style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline;">
+                                &laquo; Previous
+                            </button>
+                        </form>
+                    </li>
+
+                    <!-- Page Numbers -->
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                        <form method="get" action="/home" style="display: inline;">
+                            <input type="hidden" name="start" th:value="${i}">
+                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
+                            <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
+                            <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
+                            <div th:if="${param.tag != null}">
+                                <input type="hidden" th:each="t : ${param.tag}" name="tag" th:value="${t}">
+                            </div>
+                            <div th:if="${param.author != null}">
+                                <input type="hidden" th:each="a : ${param.author}" name="author" th:value="${a}">
+                            </div>
+                            <button type="submit"
+                                    th:text="${i + 1}"
+                                    th:style="${i == currentPage} ? 'background-color: #007bff; color: white; border: 1px solid #007bff;' : 'background: none; border: 1px solid #ddd; color: #007bff;'"
+                                    style="cursor: pointer; padding: 5px 10px; border-radius: 3px; text-decoration: none;">
+                            </button>
+                        </form>
+                    </li>
+
+                    <!-- Next Button -->
+                    <li th:if="${currentPage < totalPages - 1}">
+                        <form method="get" action="/home" style="display: inline;">
+                            <input type="hidden" name="start" th:value="${currentPage + 1}">
+                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
+                            <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
+                            <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
+                            <div th:if="${param.tag != null}">
+                                <input type="hidden" th:each="t : ${param.tag}" name="tag" th:value="${t}">
+                            </div>
+                            <div th:if="${param.author != null}">
+                                <input type="hidden" th:each="a : ${param.author}" name="author" th:value="${a}">
+                            </div>
+                            <button type="submit" style="background: none; border: none; color: #007bff; cursor: pointer; text-decoration: underline;">
+                                Next &raquo;
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
     </div>
 
 </div>

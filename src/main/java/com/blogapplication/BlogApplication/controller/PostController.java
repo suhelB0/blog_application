@@ -6,6 +6,7 @@ import com.blogapplication.BlogApplication.Entity.Tag;
 import com.blogapplication.BlogApplication.service.PostService;
 import com.blogapplication.BlogApplication.service.TagService;
 import com.blogapplication.BlogApplication.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,11 +50,15 @@ public class PostController {
                        @RequestParam(value = "sortField", defaultValue = "publishedAt", required = false) String sortField,
                        @RequestParam(value = "order", defaultValue = "", required = false) String order,
                        @RequestParam(value = "tag", required = false) String[] tags,
-                       @RequestParam(value = "author", required = false) String[] authors, Model model){
+                       @RequestParam(value = "author", required = false) String[] authors,
+                       @RequestParam(value = "start", defaultValue = "0") int start,
+                       @RequestParam(value = "limit", defaultValue = "6") int limit, Model model){
 
-        List<Post> posts = postService.getFilteredPosts(search, sortField, order, tags, authors);
+        Page<Post> postPage = postService.getFilteredPosts(search, sortField, order, tags, authors, start, limit);
 
-        model.addAttribute("posts", posts);
+        model.addAttribute("posts", postPage.getContent());
+        model.addAttribute("currentPage", start);
+        model.addAttribute("totalPages", postPage.getTotalPages());
         model.addAttribute("sortField", sortField);
         model.addAttribute("order", order);
         model.addAttribute("search", search);

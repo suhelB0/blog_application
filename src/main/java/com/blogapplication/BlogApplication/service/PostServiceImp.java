@@ -5,6 +5,9 @@ import com.blogapplication.BlogApplication.Entity.Tag;
 import com.blogapplication.BlogApplication.Entity.User;
 import com.blogapplication.BlogApplication.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +30,6 @@ public class PostServiceImp implements PostService{
     @Override
     public Post getPostById(int id) {
         return postRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<Post> getAllPost() {
-        return postRepository.findAllByIsPublishedTrue();
     }
 
     @Override
@@ -84,56 +82,34 @@ public class PostServiceImp implements PostService{
     }
 
     @Override
-    public List<Post> getFilteredPosts(String search, String sortField, String order, String[] tags, String[] authors) {
-
-        List<Post> posts;
-
+    public Page<Post> getFilteredPosts(String search, String sortField, String order, String[] tags, String[] authors, int start, int limit) {
         boolean hasSearch = search != null && !search.isEmpty();
         boolean hasFilters = tags != null || authors != null;
 
-        if(hasSearch && hasFilters){
-            if(order.equals("asc")){
-                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.ASC, sortField));
-            }
-            else if(order.equals("desc")){
-                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.by(Sort.Direction.DESC,sortField));
-            }
-            else {
-                posts = postRepository.searchPostsWithFiltersSort(search, tags, authors, Sort.unsorted());
-            }
+        Sort sort;
+        if(order.equals("asc")){
+            sort = Sort.by(Sort.Direction.ASC, sortField);
         }
-        else if(hasFilters){
-            if(order.equals("asc")){
-                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.ASC, sortField));
-            } else if(order.equals("desc")){
-                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.by(Sort.Direction.DESC, sortField));
-            }
-            else{
-                posts = postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, Sort.unsorted());
-            }
-        }
-        else if(hasSearch){
-            if(order.equals("asc")){
-                posts = postRepository.searchPostsSort(search, Sort.by(Sort.Direction.ASC, sortField));
-            }
-            else if(order.equals("desc")){
-                posts = postRepository.searchPostsSort(search, Sort.by(Sort.Direction.DESC, sortField));
-            }
-            else{
-                posts = postRepository.searchPostsSort(search, Sort.unsorted());
-            }
+        else if(order.equals("desc")){
+            sort = Sort.by(Sort.Direction.DESC, sortField);
         }
         else{
-            if(order.equals("asc")){
-                posts = postRepository.findAllByIsPublishedTrueOrderByPublishedAtAsc();
-            }
-            else if(order.equals("desc")){
-                posts = postRepository.findAllByIsPublishedTrueOrderByPublishedAtDesc();
-            }
-            else {
-                posts = postRepository.findAllByIsPublishedTrue();
-            }
+            sort = Sort.unsorted();
         }
-        return posts;
+
+        Pageable pageable = PageRequest.of(start, limit, sort);
+
+        if(hasSearch && hasFilters){
+            return postRepository.searchPostsWithFiltersSort(search, tags, authors, pageable);
+        }
+        else if(hasFilters){
+            return postRepository.filterPostsByTagsAndAuthorsSort(tags, authors, pageable);
+        }
+        else if(hasSearch){
+            return postRepository.searchPostsSort(search, pageable);
+        }
+        else{
+            return postRepository.findAllByIsPublishedTrue(pageable);
+        }
     }
 }
