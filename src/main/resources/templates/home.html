@@ -27,7 +27,6 @@
             margin-bottom: 15px;
         }
 
-        /* Posts container */
         .posts-container {
             display: flex;
             flex-wrap: wrap;
@@ -35,7 +34,7 @@
         }
 
         .post {
-            flex: 0 0 48%; /* Two posts per row */
+            flex: 0 0 48%;
             border: 1px solid #ccc;
             padding: 10px;
             height: 230px;
@@ -54,7 +53,6 @@
             margin-top: 5px;
         }
 
-        /* Pagination */
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -82,8 +80,6 @@
 <body>
 
 <div class="container">
-
-    <!-- Sidebar: Filters -->
     <div class="sidebar">
         <form action="/home" method="get">
             <div class="filters">
@@ -119,18 +115,25 @@
         </form>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
+        <h1 th:if="${!username.equals('anonymousUser')}" th:text="${username}"></h1>
         <h1>My Blog Application</h1>
-        <a th:href="@{/newPost}">Add Post</a>
 
-        <!-- Search -->
+        <a th:if="${!role.equals('anonymousUser')}" th:href="@{/newPost}">Add Post</a>
+
+        <form th:if="${role.equals('anonymousUser')}" th:action="@{/login}">
+            <button type="submit">Login</button>
+        </form>
+
+        <form th:if="${!role.equals('anonymousUser')}" th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+
         <form class="search" action="/home" method="get">
             <input type="text" name="search" placeholder="Search posts..." th:value="${search}">
             <button type="submit">Search</button>
         </form>
 
-        <!-- Sort -->
         <form class="sort" action="/home" method="get">
             <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
             <div th:if="${param.tag != null}">
@@ -149,7 +152,6 @@
             <button type="submit">Sort</button>
         </form>
 
-        <!-- Posts -->
         <div class="posts-container">
             <div th:each="post : ${posts}" class="post">
                 <h3 th:text="${post.title}"></h3>
@@ -169,7 +171,6 @@
             <nav>
                 <ul style="list-style: none; padding: 0; display: inline-flex; gap: 10px;">
 
-                    <!-- Previous Button -->
                     <li th:if="${currentPage > 0}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${currentPage - 1}">
@@ -189,7 +190,6 @@
                         </form>
                     </li>
 
-                    <!-- Page Numbers -->
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${i}">
@@ -211,7 +211,6 @@
                         </form>
                     </li>
 
-                    <!-- Next Button -->
                     <li th:if="${currentPage < totalPages - 1}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${currentPage + 1}">

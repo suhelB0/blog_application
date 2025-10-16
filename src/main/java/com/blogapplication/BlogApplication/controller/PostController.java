@@ -3,11 +3,13 @@ package com.blogapplication.BlogApplication.controller;
 import com.blogapplication.BlogApplication.Entity.Comment;
 import com.blogapplication.BlogApplication.Entity.Post;
 import com.blogapplication.BlogApplication.Entity.Tag;
+import com.blogapplication.BlogApplication.Entity.User;
 import com.blogapplication.BlogApplication.service.PostService;
 import com.blogapplication.BlogApplication.service.TagService;
 import com.blogapplication.BlogApplication.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +56,14 @@ public class PostController {
                        @RequestParam(value = "start", defaultValue = "0") int start,
                        @RequestParam(value = "limit", defaultValue = "6") int limit, Model model){
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!username.equals("anonymousUser")){
+            User userName = userService.getUserByEmail(username);
+            model.addAttribute("role", userName.getRoles());
+        } else{
+            model.addAttribute("role", "anonymousUser");
+        }
+
         Page<Post> postPage = postService.getFilteredPosts(search, sortField, order, tags, authors, start, limit);
 
         model.addAttribute("posts", postPage.getContent());
@@ -66,16 +76,38 @@ public class PostController {
         model.addAttribute("author", authors);
         model.addAttribute("tags", tagService.getPublishedTags());
         model.addAttribute("allAuthors", userService.getAuthors());
+        model.addAttribute("username", username);
         return "home";
     }
 
     @GetMapping("/readPost/{id}")
-    public String readPost(Model model, @PathVariable int id){
+    public String readPost(Model model, @PathVariable int id) {
         Post post = postService.getPostById(id);
-        model.addAttribute("post",post);
+        model.addAttribute("post", post);
         model.addAttribute("comment", new Comment());
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean isAuthenticated = !"anonymousUser".equals(username);
+        model.addAttribute("isAuthenticated", isAuthenticated);
+
+        boolean isAdmin = false;
+        boolean isAuthorOfPost = false;
+
+        if (isAuthenticated) {
+            User currentUser = userService.getUserByEmail(username);
+            if (currentUser != null) {
+                model.addAttribute("currentUsername", currentUser.getName());
+                model.addAttribute("currentEmail", currentUser.getEmail());
+                isAdmin = currentUser.getRoles() != null && currentUser.getRoles().contains("ROLE_ADMIN");
+                isAuthorOfPost = post.getUser() != null && post.getUser().getId() == currentUser.getId();
+            }
+        }
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isAuthorOfPost", isAuthorOfPost);
+
         return "readPost";
     }
+
 
     @GetMapping("/updatePost/{id}")
     public String updatePost(@PathVariable("id") int id, Model model){

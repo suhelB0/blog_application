@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,18 +35,17 @@ public class PostServiceImp implements PostService{
 
     @Override
     public void saveOrUpdatePost(Post post, String tagString) {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUserByEmail(name);
+
         if(post.getId()!=0){
             Post existingPost = getPostById(post.getId());
             post.setUser(existingPost.getUser());
             post.setComments(existingPost.getComments());
         }
         else{
-            User user = userService.getUserById(1);
             post.setUser(user);
         }
-
-        User user = userService.getUserById(1);
-        post.setUser(user);
 
         String[] tags = tagString.split(",");
         List<Tag> tagList = new ArrayList<>();

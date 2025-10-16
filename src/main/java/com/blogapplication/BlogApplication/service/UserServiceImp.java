@@ -22,7 +22,17 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
     public List<User> getAuthors() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 }

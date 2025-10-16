@@ -12,8 +12,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
+    private String roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
@@ -56,5 +58,13 @@ public class User {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 }

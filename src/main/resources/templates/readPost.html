@@ -72,8 +72,8 @@
         <p th:text="${post.user.name +', '+ #temporals.format(post.publishedAt, 'dd/MMM/yyyy  HH:mm')}"></p>
         <p th:text="${post.content}"></p>
         <div class="button-container">
-            <a th:href="@{'/updatePost/'+${post.id}}">Update</a>
-            <a th:href="@{'/deletePost/'+${post.id}}">Delete</a>
+            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/updatePost/'+${post.id}}">Update</a>
+            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/deletePost/'+${post.id}}">Delete</a>
         </div>
     </div>
 
@@ -82,8 +82,8 @@
         <div th:each="c : ${post.comments}">
             <p><strong th:text="${c.name}"></strong> (<span th:text="${c.email}"></span>)</p>
             <p th:text="${c.commentText}"></p>
-            <a th:href="@{'/editComment/'+${c.id}}">Edit</a> |
-            <a th:href="@{'/deleteComment/'+${c.id}}">Delete</a>
+            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/editComment/'+${c.id}}">Edit</a>
+            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/deleteComment/'+${c.id}}">Delete</a>
             <hr>
         </div>
     </div>
@@ -93,14 +93,22 @@
         <form action="#" th:action="@{'/saveComment/'+${post.id}}" th:object="${comment}" method="post">
 
             <input type="hidden" th:field="*{id}">
-            <label> Enter Username:
-                <input type="text" th:field="*{name}" placeholder="User Name"/>
-            </label>
+
+            <div th:if="${!isAuthenticated}">
+                <label> Enter Username:
+                    <input type="text" th:field="*{name}" placeholder="User Name"/>
+                </label>
+                <br> <br>
+                <label> Enter Email:
+                    <input type="email" th:field="*{email}" placeholder="User Email">
+                </label>
+            </div>
             <br> <br>
-            <label> Enter Email:
-                <input type="email" th:field="*{email}" placeholder="User Email">
-            </label>
-            <br> <br>
+
+            <div th:if="${isAuthenticated}">
+                <input type="hidden" name="name" th:value="${currentUsername}" />
+                <input type="hidden" name="email" th:value="${currentEmail}" />
+            </div>
             <label> Enter comment:
                 <textarea th:field="*{commentText}" rows="5" cols="40"></textarea>
             </label>
