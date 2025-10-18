@@ -1,5 +1,6 @@
 package com.blogapplication.BlogApplication.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class Tag {
     private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "tags")
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
     @PrePersist

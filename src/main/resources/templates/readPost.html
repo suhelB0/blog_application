@@ -82,8 +82,8 @@
         <div th:each="c : ${post.comments}">
             <p><strong th:text="${c.name}"></strong> (<span th:text="${c.email}"></span>)</p>
             <p th:text="${c.commentText}"></p>
-            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/editComment/'+${c.id}}">Edit</a>
-            <a th:if="${isAdmin or isAuthorOfPost}" th:href="@{'/deleteComment/'+${c.id}}">Delete</a>
+            <a th:if="${isAdmin or isAuthorOfPost or c.email == currentEmail}" th:href="@{'/editComment/'+${c.id}}">Edit</a>
+            <a th:if="${isAdmin or isAuthorOfPost or c.email == currentEmail}" th:href="@{'/deleteComment/'+${c.id}}">Delete</a>
             <hr>
         </div>
     </div>

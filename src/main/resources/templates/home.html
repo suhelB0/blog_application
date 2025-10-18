@@ -174,7 +174,7 @@
                     <li th:if="${currentPage > 0}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${currentPage - 1}">
-                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="limit" value="10">
                             <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
                             <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
                             <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
@@ -193,7 +193,7 @@
                     <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${i}">
-                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="limit" value="10">
                             <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
                             <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
                             <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">
@@ -214,7 +214,7 @@
                     <li th:if="${currentPage < totalPages - 1}">
                         <form method="get" action="/home" style="display: inline;">
                             <input type="hidden" name="start" th:value="${currentPage + 1}">
-                            <input type="hidden" name="limit" value="6">
+                            <input type="hidden" name="limit" value="10">
                             <input type="hidden" name="search" th:if="${search != null and search != ''}" th:value="${search}">
                             <input type="hidden" name="sortField" th:if="${sortField != null and sortField != '' and order != null and order != ''}" th:value="${sortField}">
                             <input type="hidden" name="order" th:if="${order != null and order != ''}" th:value="${order}">

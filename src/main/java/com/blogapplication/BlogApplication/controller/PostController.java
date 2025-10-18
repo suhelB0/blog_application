@@ -54,7 +54,7 @@ public class PostController {
                        @RequestParam(value = "tag", required = false) String[] tags,
                        @RequestParam(value = "author", required = false) String[] authors,
                        @RequestParam(value = "start", defaultValue = "0") int start,
-                       @RequestParam(value = "limit", defaultValue = "6") int limit, Model model){
+                       @RequestParam(value = "limit", defaultValue = "10") int limit, Model model){
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!username.equals("anonymousUser")){

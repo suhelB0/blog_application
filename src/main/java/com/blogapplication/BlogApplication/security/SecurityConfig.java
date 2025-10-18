@@ -3,7 +3,9 @@ package com.blogapplication.BlogApplication.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,7 +35,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/home","/login","/register","/readPost/**","/saveComment/**").permitAll()
                         .requestMatchers("/newPost", "/savePost", "/updatePost/**", "/deletePost/**").hasAnyRole("AUTHOR","ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/blog/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/blog/posts").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/blog/posts/**").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blog/posts/**").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers("/api/blog/comments/**").permitAll()
+                        .requestMatchers("/api/blog/**").hasAnyRole("AUTHOR","ADMIN")
                         .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
